@@ -8,8 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
+    "mediasoup-client": "3",
     "next": "9.4.2",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.4",
+    "@types/react": "^16.9.35",
+    "typescript": "^3.9.3"
   }
 }
