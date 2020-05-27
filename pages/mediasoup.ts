@@ -8,6 +8,7 @@ const socketPromise = require('socket.io-promise')
 //TODO remove global variables
 let device
 let producer
+let socket
 
 export async function connect() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -23,7 +24,7 @@ export async function connect() {
     query: { roomId, peerName }
   }
 
-  const socket = io('http://localhost:8080', options)
+  socket = io('http://localhost:8080', options)
   socket.request = socketPromise(socket)
 
   socket.on('connect', async () => {
@@ -100,6 +101,51 @@ async function getUserMedia(transport) {
     console.error('getUserMedia() failed:', err.message)
     throw err
   }
+
+  return stream
+}
+
+async function subscribe() {
+  const transport = device.createRecvTransport()
+
+  transport.on('connect', async ({ dtlsParameters }, cb, errback) => {
+    try {
+      //TODO what does it mean 'connectConsumerTransport'
+      await socket.request('connectConsumerTransport', {
+        transportId: transport.id,
+        dtlsParameters
+      })
+
+      cb()
+    } catch(errorContent) {
+      errback(errorContent)
+    }
+  })
+
+  const stream = consume(transport)
+}
+
+async function consume(transport) {
+  const { rtpCapabilities } = device
+  //TODO what does it mean 'cosume'
+  const data = await socket.request('consume', { rtpCapabilities })
+
+  const {
+    producerId,
+    id,
+    kind,
+    rtpParameters,
+  } = data
+
+  const consumer = await transport.consume({
+    id,
+    producerId,
+    kind,
+    rtpParameters
+  })
+
+  const stream = new MediaStream()
+  stream.addTrack(consumer.track)
 
   return stream
 }
