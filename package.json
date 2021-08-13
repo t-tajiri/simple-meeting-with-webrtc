@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "mediasoup-client": "3",
-    "next": "9.4.2",
+    "next": "11.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "socket.io-client": "^2.3.0",
